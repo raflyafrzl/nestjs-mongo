@@ -6,10 +6,10 @@ export type DemoDocument = Airport & Document;
 @Schema()
 export class Airport {
   @Prop({ required: true, maxlength: 3 })
-  airportCode: string;
+  airport_code: string;
 
   @Prop()
-  airportName: string;
+  airport_name: string;
 
   @Prop({ required: true })
   location: string;
