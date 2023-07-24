@@ -14,4 +14,13 @@ export class AirportService {
     const createdAirport = new this.AirportModel(airportDTO);
     return createdAirport.save();
   }
+
+  async findOne(id: string): Promise<Airport> {
+    const result = this.AirportModel.findOne({ _id: id });
+    return result;
+  }
+  async findMany(): Promise<Airport[]> {
+    const result = await this.AirportModel.find();
+    return result;
+  }
 }
