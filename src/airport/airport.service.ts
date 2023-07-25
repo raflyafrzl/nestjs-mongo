@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Airport, DemoDocument } from './airport.schema';
+import { Airport } from './airport.schema';
 import { Model } from 'mongoose';
-import CreateAirportDTO from 'src/dto/CreateAirport';
+
+import CreateOrUpdateAirportDTO from 'src/dto/CreateAirport';
 
 @Injectable()
 export class AirportService {
@@ -10,7 +11,7 @@ export class AirportService {
     @InjectModel(Airport.name) private AirportModel: Model<Airport>,
   ) {}
 
-  async create(airportDTO: CreateAirportDTO): Promise<Airport> {
+  async create(airportDTO: CreateOrUpdateAirportDTO): Promise<Airport> {
     const createdAirport = new this.AirportModel(airportDTO);
     return createdAirport.save();
   }
@@ -21,6 +22,15 @@ export class AirportService {
   }
   async findMany(): Promise<Airport[]> {
     const result = await this.AirportModel.find();
+    return result;
+  }
+  async update(
+    id: string,
+    payload: CreateOrUpdateAirportDTO,
+  ): Promise<Airport> {
+    const result = this.AirportModel.findByIdAndUpdate(id, payload, {
+      new: true,
+    });
     return result;
   }
 }

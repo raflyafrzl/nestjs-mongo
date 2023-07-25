@@ -7,7 +7,7 @@ export const CreateAirportSchema = Joi.object({
   location_acronym: Joi.string().required().max(3, 'utf-8'),
 });
 
-export default interface CreateAirportDTO {
+export default interface CreateOrUpdateAirportDTO {
   airport_name: string;
   airport_code: string;
   location: string;

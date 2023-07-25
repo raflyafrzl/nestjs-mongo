@@ -3,17 +3,19 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   UseFilters,
   UsePipes,
 } from '@nestjs/common';
 import { AirportService } from './airport.service';
-import CreateAirportDTO, { CreateAirportSchema } from 'src/dto/CreateAirport';
+import { CreateAirportSchema } from 'src/dto/CreateAirport';
 import { JoiValidationPipe } from 'src/pipes/validation.pipe';
 import { Airport } from './airport.schema';
 import { HttpExceptionFilter } from 'src/exception/http-exception.filter';
 import { WebResponse } from 'src/model/web-response';
 import { MongoIdCastPipe } from 'src/pipes/mongo-id-cast.pipe';
+import CreateOrUpdateAirportDTO from 'src/dto/CreateAirport';
 
 @Controller('airport')
 export class AirportController {
@@ -23,13 +25,15 @@ export class AirportController {
   @UsePipes(new JoiValidationPipe(CreateAirportSchema))
   @UseFilters(HttpExceptionFilter)
   async createAirport(
-    @Body() airportDTO: CreateAirportDTO,
+    @Body() airportDTO: CreateOrUpdateAirportDTO,
   ): Promise<WebResponse> {
-    const result: Airport = await this.airportService.create(airportDTO);
+    const airport: Airport = await this.airportService.create(airportDTO);
     return {
       status_code: 201,
       message: 'You have been successfully created',
-      data: result,
+      data: {
+        Airport: airport,
+      },
     };
   }
 
@@ -43,7 +47,9 @@ export class AirportController {
     return {
       status_code: 200,
       message: 'success getting specific data',
-      data: airport,
+      data: {
+        Airport: airport,
+      },
     };
   }
 
@@ -54,7 +60,25 @@ export class AirportController {
     return {
       status_code: 200,
       message: 'success getting all data',
-      data: airports,
+      data: {
+        Airport: airports,
+      },
+    };
+  }
+
+  @Patch(':id')
+  @UseFilters(HttpExceptionFilter)
+  async updateAirport(
+    @Body() payload: CreateOrUpdateAirportDTO,
+    @Param('id', MongoIdCastPipe) id: string,
+  ): Promise<WebResponse> {
+    const result = await this.airportService.update(id, payload);
+    return {
+      status_code: 200,
+      message: 'Airport has been successfully updated',
+      data: {
+        Airport: result,
+      },
     };
   }
 }
